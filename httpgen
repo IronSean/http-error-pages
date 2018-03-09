@@ -27,7 +27,10 @@ function GenHttpCodes() {
   local _jsonf="$1"
   local _fdir="$2"
 
-  local _count=$(jq -r ".[].code" ${_jsonf} | wc -l)
+  local _count
+
+  _count=$(jq -r ".[].code" "$_jsonf" | wc -l)
+
   local _end=$((_count - 1))
 
   mkdir -p "$_fdir"
@@ -48,7 +51,7 @@ function GenHttpCodes() {
 
     if [[ "$_http_code" -ge 900 ]] ; then
 
-      _http_code=$(echo $_http_title | tr '[:upper:]' '[:lower:]' | tr " " "_")
+      _http_code=$(echo "$_http_title" | tr '[:upper:]' '[:lower:]' | tr " " "_")
       _http_full_title="$_http_title"
 
     else
@@ -93,7 +96,8 @@ function GetData() {
   local _key="$1"
   local _value="$2"
 
-  export _msg=$(jq -r ".[${_key}].${_value}" ${_jsonf})
+  export _msg
+  _msg=$(jq -r ".[${_key}].${_value}" "$_jsonf")
 
   return "$_STATE"
 
@@ -104,7 +108,7 @@ function __main__() {
   local _FUNCTION_ID="__main__"
   local _STATE="0"
 
-  cd "$_init_directory"
+  cd "$_init_directory" || _exit_ 1
 
   local _param="${__script_params[0]}"
 
